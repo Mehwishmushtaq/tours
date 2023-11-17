@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react'
+import Loader from './loader'
+import Tours from './tours'
+import { Button } from 'react-bootstrap'
+const url = "https://course-api.com/react-tours-project"
 
-function App() {
+const App = () => {
+    const [isLoading, setIsLoading] = useState(true)
+    const [tours, setTours] = useState([])
+    const getTours = async () =>{
+        setIsLoading(true)
+        const response =await fetch(url);
+        const tours =await response.json();
+        setTours(tours)
+        setIsLoading(false)
+        // console.log(tours);
+    }
+     const removeTour = (id)=>{
+          const singleTour = tours.filter((tour)=>tour.id !== id)
+           setTours(singleTour)
+     }
+    useEffect(()=>{
+        getTours()
+    }, [])
+    
+    //conditional rendering for return multiple components will use if-else condition
+    if (isLoading) {
+        return <Loader/>
+    }
+    if (tours.length === 0) {
+       return <Button variant='success' onClick={()=>getTours()}>
+         Fetch Again 
+        </Button>
+    }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+    //<div>App</div>
+    <div><Tours tours = {tours} removeTour = {removeTour}/></div>
+    
+  )
 
-export default App;
+}
+export default App
